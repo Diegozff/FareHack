@@ -12,7 +12,7 @@
 // ─── Configuración del webhook ───────────────────────
 // Reemplazá WEBHOOK_URL con tu URL de Make.com, Zapier o n8n.
 // Si está vacío, los datos se guardan solo en localStorage.
-const WEBHOOK_URL = '';   // ej: 'https://hook.eu1.make.com/xxxxxxxxxxxx'
+const WEBHOOK_URL = 'https://hook.us2.make.com/q3rmgymk18kejjrtvpgb86johio5c6az';
 
 // ─── Handler principal del formulario ────────────────
 async function handleFormSubmit(event) {
