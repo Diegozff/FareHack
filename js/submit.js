@@ -134,14 +134,15 @@ Acción: Buscar en Google Flights / Booking y hacer swap si corresponde.
     `.trim(),
   };
 
-  const res = await fetch(WEBHOOK_URL, {
+  // mode: 'no-cors' evita el bloqueo CORS del navegador.
+  // Make.com recibe el body igual aunque no podamos leer la respuesta.
+  await fetch(WEBHOOK_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    mode: 'no-cors',
     body: JSON.stringify(payload),
   });
 
-  if (!res.ok) throw new Error(`Webhook respondió ${res.status}`);
-  console.info('[FareHack] Webhook OK →', res.status);
+  console.info('[FareHack] Webhook disparado →', WEBHOOK_URL);
 }
 
 // ─── Helpers ─────────────────────────────────────────
