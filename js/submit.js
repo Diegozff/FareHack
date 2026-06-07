@@ -43,10 +43,22 @@ async function handleFormSubmit(event) {
   }
 
   try {
-    // 1. Guardar en localStorage
+    // 1. Subir archivo a Supabase (no bloqueante)
+    const file = document.getElementById('file-input')?.files[0];
+    if (file) {
+      uploadFileToSupabase(file, data.leadId).then(url => {
+        if (url) {
+          data.fileUrl = url;
+          // Actualizar localStorage con la URL del archivo
+          localStorage.setItem('farehack_current_lead', JSON.stringify(data));
+        }
+      });
+    }
+
+    // 2. Guardar en localStorage
     saveToLocalStorage(data);
 
-    // 2. Enviar al webhook (no bloqueante — la UX continúa igual)
+    // 3. Enviar al webhook (no bloqueante — la UX continúa igual)
     sendToWebhook(data).catch(err => console.warn('[FareHack] Webhook no disponible:', err));
 
     // 3. Activar pantalla de carga

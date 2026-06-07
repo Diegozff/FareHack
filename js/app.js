@@ -223,20 +223,27 @@ function startCountdownTimer() {
   }, 1000);
 }
 
-// ─── Poblar dashboard con datos del form ─────────────
+// ─── Poblar página de Gracias con datos del form ─────
 function populateDashboard(data) {
   const set = (id, val) => {
     const el = document.getElementById(id);
-    if (el && val) el.textContent = val;
+    if (el && val !== undefined && val !== '') el.textContent = val;
   };
 
-  const initial = data.name ? data.name.trim().charAt(0).toUpperCase() : 'U';
-  set('user-avatar', initial);
+  // Nombre personalizado (solo el primer nombre)
+  const firstName = data.name ? data.name.trim().split(' ')[0] : 'viajero';
+  set('dash-user-name',   firstName);
+  set('dash-email-confirm', data.email || '');
 
+  // PNR (doble: badge y header)
+  set('dash-pnr-badge',   data.pnr || '—');
   set('dashboard-pnr',    data.pnr || '—');
+
+  // Detalles de la reserva
   set('dash-route',       data.route || '—');
   set('dash-provider',    data.provider || '—');
   set('dash-price',       data.price ? `USD ${Number(data.price).toFixed(0)}` : '—');
+  set('dash-price-ref',   data.price ? `USD ${Number(data.price).toFixed(0)}` : '—');
 
   if (data.travelDate) {
     const d = new Date(data.travelDate + 'T12:00:00');
@@ -248,14 +255,29 @@ function populateDashboard(data) {
     set('dash-cancel-date', d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }));
   }
 
+  // Timestamp de activación
   const now = new Date();
   set('activation-time', now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }));
+}
 
-  // Animar las barras shimmer del dashboard
-  document.querySelectorAll('.shimmer-bar').forEach((bar, i) => {
-    setTimeout(() => {
-      const pct = 30 + Math.random() * 50;
-      bar.style.width = `${pct}%`;
-    }, i * 400);
-  });
+// ─── Compartir app ────────────────────────────────────
+function shareApp() {
+  const url   = window.location.href.split('#')[0];
+  const text  = '¡Encontré una herramienta que monitorea mis reservas y me devuelve plata si baja el precio! 🛫';
+  if (navigator.share) {
+    navigator.share({ title: 'FareHack', text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text}\n${url}`)
+      .then(() => showToast('¡Link copiado al portapapeles!'))
+      .catch(() => showToast('Copiá este link: ' + url));
+  }
+}
+
+// ─── Toast de confirmación ────────────────────────────
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-white text-black text-sm font-medium px-5 py-3 rounded-xl shadow-xl z-50 animate-fade-in';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
