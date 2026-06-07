@@ -146,12 +146,16 @@ Acción: Buscar en Google Flights / Booking y hacer swap si corresponde.
     `.trim(),
   };
 
-  // mode: 'no-cors' evita el bloqueo CORS del navegador.
-  // Make.com recibe el body igual aunque no podamos leer la respuesta.
+  // Enviamos como form-urlencoded: es un "simple request" que pasa
+  // el bloqueo CORS del navegador Y Make.com parsea cada campo por separado.
+  const formBody = new URLSearchParams();
+  Object.entries(payload).forEach(([k, v]) => formBody.append(k, String(v)));
+
   await fetch(WEBHOOK_URL, {
     method: 'POST',
     mode: 'no-cors',
-    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formBody.toString(),
   });
 
   console.info('[FareHack] Webhook disparado →', WEBHOOK_URL);
